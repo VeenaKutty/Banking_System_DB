@@ -236,3 +236,211 @@ SELECT *  -- CALLING DATA IN RANGE
 FROM CUSTOMERS
 WHERE BIRTHDATE >= '1995-01-01' AND BIRTHDATE <= '2000-12-31';
 
+-- Customer Analysis
+
+-- How many customers are there?
+
+SELECT COUNT(*) AS Total_Customers -- Column Alises 
+FROM CUSTOMERS;
+
+-- Which customers have missing information?
+
+SELECT CUSTOMERID, FIRSTNAME AS NAME
+FROM CUSTOMERS
+WHERE LASTNAME IS NULL OR EMAIL IS NULL;
+
+-- Who are the youngest/oldest customers?
+
+SELECT
+MAX(BIRTHDATE) AS YOUNGEST_CUSTOMER,
+MIN(BIRTHDATE) AS OLDEST_CUSTOMER
+FROM CUSTOMERS;
+
+-- How many customers were born before/after a particular year?
+
+-- Before 2000
+
+SELECT * 
+FROM CUSTOMERS
+WHERE YEAR(BIRTHDATE) <= 2000;
+
+-- After 2000
+
+SELECT * 
+FROM CUSTOMERS
+WHERE YEAR(BIRTHDATE) > 2000;
+
+-- Which customers have multiple accounts?
+
+SELECT CUSTOMERID, COUNT(*) AS Total_Accounts
+FROM ACCOUNTS
+GROUP BY CUSTOMERID
+HAVING Total_Accounts > 1;
+
+-- ACCOUNT ANALYSIS
+
+-- How many Savings, Current and Salary accounts exist?
+
+SELECT ACCOUNTTYPE,COUNT(*) AS Total_Accounts
+FROM ACCOUNTS
+GROUP BY ACCOUNTTYPE;
+
+-- What is the total balance?
+
+SELECT SUM(BALANCE) Total_Balance
+FROM ACCOUNTS;
+
+-- What is the average account balance?
+
+SELECT AVG(BALANCE) Average_Balance
+FROM ACCOUNTS;
+
+-- Which customers have the highest balances?
+
+SELECT CUSTOMERID, BALANCE Highest_Balance
+FROM ACCOUNTS
+ORDER BY BALANCE DESC LIMIT 1;
+
+-- Which accounts have NULL balances?
+
+SELECT *
+FROM ACCOUNTS
+WHERE BALANCE=NULL;
+
+-- Which branch manages the most accounts?
+
+SELECT BRANCHID,COUNT(*) Total_Accounts
+FROM ACCOUNTS
+GROUP BY BRANCHID
+ORDER BY Total_Accounts DESC LIMIT 1;
+
+-- Transaction Analysis
+
+-- What is the total transaction amount?
+
+SELECT SUM(AMOUNT) Total_Transaction_Amount
+FROM TRANSACTIONS;
+
+-- How many deposits/withdrawals/transfers are there?
+
+SELECT TRANSACTIONTYPE, COUNT(*) Total_Transactions
+FROM TRANSACTIONS
+WHERE TRANSACTIONTYPE IN ('Deposit','Withdrawal','Transfer')
+GROUP BY TRANSACTIONTYPE;
+
+-- Which transaction type has the highest volume?
+
+SELECT TRANSACTIONTYPE,SUM(AMOUNT) Total_Amount
+FROM TRANSACTIONS
+GROUP BY TRANSACTIONTYPE
+ORDER BY Total_Amount DESC LIMIT 1;
+
+-- Which account has the highest transaction activity?
+
+SELECT ACCOUNTID, COUNT(*) Total_Transactions
+FROM TRANSACTIONS
+GROUP BY ACCOUNTID
+ORDER BY Total_Transactions DESC LIMIT 1;
+
+-- What is the average transaction amount?
+
+SELECT AVG(AMOUNT) Average_Transaction_Amount
+FROM TRANSACTIONS;
+
+-- Which transactions have missing dates/amounts?
+
+SELECT *
+FROM TRANSACTIONS
+WHERE TRANSACTIONDATE IS NULL OR AMOUNT IS NULL;
+
+-- Loan Analysis
+
+-- What is the total loan amount?
+
+SELECT SUM(LOANAMOUNT) Total_Loans
+FROM LOANS;
+
+-- Which customer has the largest loan?
+
+SELECT CUSTOMERID, SUM(LOANAMOUNT) Total_Loans
+FROM LOANS
+GROUP BY CUSTOMERID
+ORDER BY Total_Loans DESC LIMIT 1;
+
+-- Which loan has the highest interest rate?
+
+SELECT MAX(INTERESTRATE) Highest_Interest_Rate 
+FROM LOANS;
+
+-- Which loans are still active?
+
+SELECT * 
+FROM LOANS
+WHERE YEAR(ENDDATE) > 2026;
+
+-- Which customers have multiple loans?
+
+SELECT CUSTOMERID, COUNT(*) Total_Loans
+FROM LOANS
+GROUP BY CUSTOMERID
+HAVING Total_Loans > 1;
+
+-- What is the average loan amount?
+
+SELECT AVG(LOANAMOUNT) Average_Loan_Amount
+FROM LOANS;
+
+-- Branch Analysis
+
+-- Which branch has the most customers/accounts?
+
+-- Branch with most Accounts
+
+SELECT BRANCHID,COUNT(*) Total_Accounts 
+FROM ACCOUNTS
+GROUP BY BRANCHID
+ORDER BY Total_Accounts DESC LIMIT 1;
+
+-- Branch with most Customers
+
+SELECT BRANCHID,COUNT(CUSTOMERID) Total_Customers
+FROM ACCOUNTS
+GROUP BY BRANCHID
+ORDER BY Total_Customers DESC LIMIT 1;
+
+-- Which branch has the highest total account balance?
+
+SELECT BRANCHID, SUM(BALANCE) Total_Account_Balance
+FROM ACCOUNTS
+GROUP BY BRANCHID
+ORDER BY Total_Account_Balance DESC LIMIT 1;
+
+-- Which branch handles the most transactions?
+
+-- Account with Max Transactions
+
+SELECT ACCOUNTID, COUNT(*) Total_Transactions 
+FROM TRANSACTIONS
+GROUP BY ACCOUNTID 
+ORDER BY Total_transactions DESC LIMIT 1;
+
+-- Branch with Max Transactions
+
+SELECT BRANCHID
+FROM ACCOUNTS
+WHERE ACCOUNTID = 1003;
+
+-- Which branch has the highest loan exposure?
+
+-- Customer with Max Loan Amount
+
+SELECT CUSTOMERID, SUM(LOANAMOUNT) Total_Loan_Amount
+FROM LOANS
+GROUP BY CUSTOMERID
+ORDER BY Total_Loan_Amount DESC LIMIT 1;
+
+-- Branch with Max Loan Amount
+
+SELECT BRANCHID 
+FROM ACCOUNTS
+WHERE CUSTOMERID = 104;
